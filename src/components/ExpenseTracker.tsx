@@ -15,9 +15,10 @@ interface Expense {
 
 interface ExpenseTrackerProps {
   monthlyIncome: number;
+  previousSavings: number;
 }
 
-const ExpenseTracker = ({ monthlyIncome }: ExpenseTrackerProps) => {
+const ExpenseTracker = ({ monthlyIncome, previousSavings }: ExpenseTrackerProps) => {
   const [expenses, setExpenses] = useState<Expense[]>([
     { category: "Food", amount: 500, icon: Utensils, color: "text-orange-500" },
     { category: "Rent", amount: 1200, icon: Home, color: "text-blue-500" },
@@ -32,7 +33,7 @@ const ExpenseTracker = ({ monthlyIncome }: ExpenseTrackerProps) => {
   const [newAmount, setNewAmount] = useState("");
 
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-  const remaining = monthlyIncome - totalExpenses;
+  const remaining = monthlyIncome - totalExpenses + previousSavings;
   const percentageUsed = (totalExpenses / monthlyIncome) * 100;
 
   const addExpense = () => {

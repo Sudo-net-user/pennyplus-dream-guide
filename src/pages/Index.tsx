@@ -68,7 +68,7 @@ const Index = () => {
             </div>
 
             {/* Expense Tracker */}
-            <ExpenseTracker monthlyIncome={monthlyIncome} />
+            <ExpenseTracker monthlyIncome={monthlyIncome} previousSavings={previousSavings} />
 
             {/* Charity Section */}
             <CharitySection monthlyIncome={monthlyIncome} />
