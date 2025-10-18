@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Utensils, Home, Zap, Car, ShoppingCart, Film, MoreHorizontal } from "lucide-react";
+import { Plus, Utensils, Home, Zap, Car, ShoppingCart, Film, MoreHorizontal, PiggyBank, TrendingUp, TrendingDown } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface Expense {
@@ -52,91 +52,144 @@ const ExpenseTracker = ({ monthlyIncome }: ExpenseTrackerProps) => {
     }
   };
 
+  const updateExpenseAmount = (index: number, newAmount: number) => {
+    const updatedExpenses = [...expenses];
+    updatedExpenses[index].amount = newAmount;
+    setExpenses(updatedExpenses);
+  };
+
   return (
-    <Card className="glass-card">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Monthly Expenses</h2>
-        <Button
-          onClick={() => setShowAddExpense(!showAddExpense)}
-          className="glass-button bg-primary/10 hover:bg-primary/20"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add
-        </Button>
-      </div>
-
-      {/* Overall Progress */}
-      <div className="mb-8 p-4 bg-muted/30 rounded-2xl">
-        <div className="flex justify-between mb-2">
-          <span className="text-sm font-medium">Budget Used</span>
-          <span className="text-sm font-bold">{percentageUsed.toFixed(1)}%</span>
-        </div>
-        <Progress value={percentageUsed} className="h-3" />
-        <div className="flex justify-between mt-3 text-sm">
-          <span className="text-muted-foreground">Spent: ${totalExpenses.toFixed(2)}</span>
-          <span className={remaining >= 0 ? "text-success" : "text-destructive"}>
-            Remaining: ${remaining.toFixed(2)}
-          </span>
-        </div>
-      </div>
-
-      {/* Add Expense Form */}
-      {showAddExpense && (
-        <div className="mb-6 p-4 glass rounded-2xl space-y-4 animate-fade-in">
-          <div>
-            <Label>Category</Label>
-            <Input
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              placeholder="e.g., Groceries"
-              className="glass-button border-glass-border"
-            />
+    <div className="space-y-6">
+      {/* Savings Overview Card */}
+      <Card className="glass-card border-2 border-secondary/30 bg-gradient-to-br from-secondary/5 to-primary/5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 bg-gradient-to-br from-secondary to-primary rounded-2xl">
+            <PiggyBank className="h-6 w-6 text-white" />
           </div>
           <div>
-            <Label>Amount ($)</Label>
-            <Input
-              type="number"
-              value={newAmount}
-              onChange={(e) => setNewAmount(e.target.value)}
-              placeholder="0.00"
-              className="glass-button border-glass-border"
-            />
+            <h3 className="text-lg font-bold">Total Savings</h3>
+            <p className="text-xs text-muted-foreground">This Month</p>
           </div>
-          <Button onClick={addExpense} className="w-full bg-primary hover:bg-primary/90">
-            Add Expense
+        </div>
+        
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-1">Income</p>
+            <div className="flex items-center justify-center gap-1">
+              <TrendingUp className="h-4 w-4 text-success" />
+              <p className="text-lg font-bold">${monthlyIncome.toFixed(2)}</p>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-1">Expenses</p>
+            <div className="flex items-center justify-center gap-1">
+              <TrendingDown className="h-4 w-4 text-destructive" />
+              <p className="text-lg font-bold">${totalExpenses.toFixed(2)}</p>
+            </div>
+          </div>
+          
+          <div className="text-center p-3 bg-white/50 rounded-xl">
+            <p className="text-sm text-muted-foreground mb-1">Saved</p>
+            <p className={`text-2xl font-bold ${remaining >= 0 ? 'text-success' : 'text-destructive'}`}>
+              ${Math.abs(remaining).toFixed(2)}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <Progress 
+            value={percentageUsed} 
+            className="h-2"
+          />
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            {remaining >= 0 
+              ? `You're saving ${((remaining / monthlyIncome) * 100).toFixed(1)}% of your income! 🎉`
+              : `You're overspending by $${Math.abs(remaining).toFixed(2)} ⚠️`
+            }
+          </p>
+        </div>
+      </Card>
+
+      <Card className="glass-card">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Monthly Expenses</h2>
+          <Button
+            onClick={() => setShowAddExpense(!showAddExpense)}
+            className="glass-button bg-primary/10 hover:bg-primary/20"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add
           </Button>
         </div>
-      )}
 
-      {/* Expense Categories */}
-      <div className="space-y-3">
-        {expenses.map((expense, index) => {
-          const Icon = expense.icon;
-          const percentage = (expense.amount / monthlyIncome) * 100;
-
-          return (
-            <div
-              key={index}
-              className="p-4 glass rounded-2xl hover-lift transition-all duration-300"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 bg-muted/50 rounded-xl ${expense.color}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <span className="font-medium">{expense.category}</span>
-                </div>
-                <span className="font-bold">${expense.amount.toFixed(2)}</span>
-              </div>
-              <Progress value={percentage} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-1">
-                {percentage.toFixed(1)}% of income
-              </p>
+        {/* Add Expense Form */}
+        {showAddExpense && (
+          <div className="mb-6 p-4 glass rounded-2xl space-y-4 animate-fade-in">
+            <div>
+              <Label>Category</Label>
+              <Input
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="e.g., Groceries"
+                className="glass-button border-glass-border"
+              />
             </div>
-          );
-        })}
-      </div>
-    </Card>
+            <div>
+              <Label>Amount ($)</Label>
+              <Input
+                type="number"
+                value={newAmount}
+                onChange={(e) => setNewAmount(e.target.value)}
+                placeholder="0.00"
+                className="glass-button border-glass-border"
+              />
+            </div>
+            <Button onClick={addExpense} className="w-full bg-primary hover:bg-primary/90">
+              Add Expense
+            </Button>
+          </div>
+        )}
+
+        {/* Expense Categories */}
+        <div className="space-y-3">
+          {expenses.map((expense, index) => {
+            const Icon = expense.icon;
+            const percentage = (expense.amount / monthlyIncome) * 100;
+
+            return (
+              <div
+                key={index}
+                className="p-4 glass rounded-2xl hover-lift transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 bg-muted/50 rounded-xl ${expense.color}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <span className="font-medium">{expense.category}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">$</span>
+                    <Input
+                      type="number"
+                      value={expense.amount}
+                      onChange={(e) => updateExpenseAmount(index, parseFloat(e.target.value) || 0)}
+                      className="w-24 h-8 text-right font-bold glass-button border-glass-border"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+                <Progress value={percentage} className="h-2" />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {percentage.toFixed(1)}% of income
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    </div>
   );
 };
 
