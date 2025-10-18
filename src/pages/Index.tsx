@@ -12,11 +12,17 @@ import CharitySection from "@/components/CharitySection";
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [monthlyIncome, setMonthlyIncome] = useState(5000);
+  const [previousSavings, setPreviousSavings] = useState(0);
 
   return (
     <div className="min-h-screen pb-20">
       {/* Header */}
-      <DashboardHeader monthlyIncome={monthlyIncome} setMonthlyIncome={setMonthlyIncome} />
+      <DashboardHeader 
+        monthlyIncome={monthlyIncome} 
+        setMonthlyIncome={setMonthlyIncome}
+        previousSavings={previousSavings}
+        setPreviousSavings={setPreviousSavings}
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-6xl">
